@@ -21,6 +21,7 @@ def conexion_bd():
 @app.route('/', methods=['GET', 'POST'])
 # Create
 def crear ():
+    estudiantes = obtener_estudiantes()
     if request.method == 'POST':
         id = request.form['id']
         nombre = request.form['nombre']
@@ -31,7 +32,15 @@ def crear ():
         cursor.commit()
         conn.close()
         return "Estudiante creado con exito"
-    return render_template('crear.html')
+    return render_template('crear.html', estudiantes = estudiantes)
+
+def obtener_estudiantes():
+    conn = conexion_bd()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM ESTUDIANTE')
+    estudiantes = cursor.fetchall()
+    conn.close()
+    return estudiantes
 
 app.run(debug=True)
     
