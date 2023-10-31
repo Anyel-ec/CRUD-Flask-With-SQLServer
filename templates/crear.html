@@ -9,8 +9,9 @@
 <body>   
     <div class="container m-5">
         <div class="row ">
-            <div class="col-12 text-center">
-                Crear Estudiante
+            <div class="col-12 text-start">
+                <h3>Crear Estudiante: 
+                </h3>
                 <form action="/" method="post">
                     <input type="text" name="id">
                     <input type="text" name="nombre"  placeholder="Nombre">
@@ -19,7 +20,7 @@
                 </form>
             </div>
             <div class="col-12">
-                <h2>Estudiantes</h2>
+                <h2>Lista Estudiante</h2>
                 <ul class="list-group">
                     {% if estudiantes %}
                         {% for estudiante in estudiantes %}
@@ -30,10 +31,9 @@
                                 <input type="text" name="apellido" placeholder=" Nuevo Apellido">
                                 <input type="submit" value="Editar" class="btn btn-primary">
                             </form>
-                            <form action="/eliminar/{{estudiante.id}} " method="post">
+                            <form action="/eliminar/{{ estudiante.id }}" method="post">
                                 <input type="submit" value="Eliminar" class="btn btn-danger">
                             </form>
-                            
                         </li>
                         {% endfor %}
                     {% else %}
@@ -44,6 +44,40 @@
             
         </div>
     </div>
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Función genérica para realizar solicitudes POST a las rutas definidas
+    function sendRequest(url, data) {
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            success: function (response) {
+                alert(response.message);
+                // Refrescar la página después de realizar la acción (opcional)
+                location.reload();
+            },
+            error: function (error) {
+                alert('Error al procesar la solicitud');
+            }
+        });
+    }
+
+    // Capturar el envío del formulario de creación y evitar que recargue la página
+    $('form[action="/"]').submit(function (e) {
+        e.preventDefault();
+        var data = $(this).serialize();
+        sendRequest('/', data);
+    });
+
+    // Capturar el envío del formulario de edición y eliminación y evitar que recargue la página
+    $('form[action^="/editar/"], form[action^="/eliminar/"]').submit(function (e) {
+        e.preventDefault();
+        var data = $(this).serialize();
+        var url = $(this).attr('action');
+        sendRequest(url, data);
+    });
+</script>
+
 </body>
 </html>

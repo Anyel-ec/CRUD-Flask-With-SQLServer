@@ -1,6 +1,6 @@
 import pyodbc # pip install pyodbc
 # pip install flask
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
@@ -31,7 +31,7 @@ def crear ():
         cursor.execute(' INSERT INTO ESTUDIANTE VALUES (?,?,?)', (id, nombre, apellido))
         cursor.commit()
         conn.close()
-        return "Estudiante creado con exito"
+        return jsonify({"message": "Estudiante creado con éxito"})
     return render_template('crear.html', estudiantes = estudiantes)
 
 def obtener_estudiantes():
@@ -51,7 +51,7 @@ def editar(id):
     cursor.execute('UPDATE ESTUDIANTE SET nombre = ?, apellido = ? WHERE id = ?', (nuevo_nombre, nuevo_apellido, id))
     cursor.commit()
     conn.close()
-    return "Actualizacion correcta"
+    return jsonify({"message": "Actualización correcta"})
 
 @app.route('/eliminar/<int:id>', methods=['POST'])
 def eliminar(id):
@@ -60,8 +60,6 @@ def eliminar(id):
     cursor.execute('DELETE FROM ESTUDIANTE WHERE id = ?', (id))
     cursor.commit()
     conn.close()
-    return "Eliminacion correcta"
-
-
+    return jsonify({"message": "Eliminación correcta"})
 
 app.run(debug=True)
