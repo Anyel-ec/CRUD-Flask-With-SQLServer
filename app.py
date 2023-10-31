@@ -42,5 +42,26 @@ def obtener_estudiantes():
     conn.close()
     return estudiantes
 
+@app.route('/editar/<int:id>', methods=['POST'])
+def editar(id):
+    conn = conexion_bd()
+    cursor = conn.cursor()
+    nuevo_nombre = request.form['nombre']
+    nuevo_apellido = request.form['apellido']
+    cursor.execute('UPDATE ESTUDIANTE SET nombre = ?, apellido = ? WHERE id = ?', (nuevo_nombre, nuevo_apellido, id))
+    cursor.commit()
+    conn.close()
+    return "Actualizacion correcta"
+
+@app.route('/eliminar/<int:id>', methods=['POST'])
+def eliminar(id):
+    conn = conexion_bd()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM ESTUDIANTE WHERE id = ?', (id))
+    cursor.commit()
+    conn.close()
+    return "Eliminacion correcta"
+
+
+
 app.run(debug=True)
-    

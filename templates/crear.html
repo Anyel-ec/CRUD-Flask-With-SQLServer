@@ -19,12 +19,21 @@
                 </form>
             </div>
             <div class="col-12">
-                <h2>Estudiante</h2>
+                <h2>Estudiantes</h2>
                 <ul class="list-group">
                     {% if estudiantes %}
                         {% for estudiante in estudiantes %}
                         <li class="list-group-item">
                           {{estudiante.id}}- {{ estudiante.nombre }} {{ estudiante.apellido }}
+                            <form action="/editar/{{estudiante.id}}" method="post">
+                                <input type="text" name="nombre"  placeholder="Nuevo Nombre">
+                                <input type="text" name="apellido" placeholder=" Nuevo Apellido">
+                                <input type="submit" value="Editar" class="btn btn-primary">
+                            </form>
+                            <form action="/eliminar/{{estudiante.id}} " method="post">
+                                <input type="submit" value="Eliminar" class="btn btn-danger">
+                            </form>
+                            
                         </li>
                         {% endfor %}
                     {% else %}
@@ -35,5 +44,6 @@
             
         </div>
     </div>
+    
 </body>
 </html>
