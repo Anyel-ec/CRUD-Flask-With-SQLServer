@@ -1,83 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>CRUD - Flask </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
-<body>   
+
+<body>
     <div class="container m-5">
-        <div class="row ">
-            <div class="col-12 text-start">
-                <h3>Crear Estudiante: 
-                </h3>
-                <form action="/" method="post">
-                    <input type="text" name="id">
-                    <input type="text" name="nombre"  placeholder="Nombre">
-                    <input type="text" name="apellido" placeholder="Apellido">
-                    <input type="submit" value="Enviar" class="btn btn-success">
-                </form>
+        <div class="col-12 mt-4">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Crear Estudiante</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Formulario para crear el estudio-->
+                    <form action="/" method="post" class="row g-3 align-items-end">
+                        <div class="col-md-2">
+                            <label for="validationDefault01" class="form-label">Identificador</label>
+                            <input type="number" class="form-control" id="validationDefault01" name="id"
+                                placeholder="Identificador" value="" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="validationDefault02" class="form-label">Primer Nombre</label>
+                            <input type="text" class="form-control" id="validationDefault02" name="nombre"
+                                placeholder="Primer Nombre" value="" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="validationDefault03" class="form-label">Primer Apellido</label>
+                            <input type="text" class="form-control" id="validationDefault03" name="apellido"
+                                placeholder="Primer Apellido" value="" required>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-success">Crear</button>
+                        </div>
+                    </form>
+                </div>
             </div>
+        </div>
+
+        <!--Segunda fila-->
+        <div class="row mt-3">
             <div class="col-12">
-                <h2>Lista Estudiante</h2>
-                <ul class="list-group">
-                    {% if estudiantes %}
-                        {% for estudiante in estudiantes %}
-                        <li class="list-group-item">
-                          {{estudiante.id}}- {{ estudiante.nombre }} {{ estudiante.apellido }}
-                            <form action="/editar/{{estudiante.id}}" method="post">
-                                <input type="text" name="nombre"  placeholder="Nuevo Nombre">
-                                <input type="text" name="apellido" placeholder=" Nuevo Apellido">
-                                <input type="submit" value="Editar" class="btn btn-primary">
-                            </form>
-                            <form action="/eliminar/{{ estudiante.id }}" method="post">
-                                <input type="submit" value="Eliminar" class="btn btn-danger">
-                            </form>
-                        </li>
-                        {% endfor %}
-                    {% else %}
-                        <li class="list-group-item"> No hay datos </li>
-                    {% endif %}
-                </ul>
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Lista de Estudiantes</h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% if estudiantes %}
+                            {% for estudiante in estudiantes %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <span class="font-weight-bold">{{ estudiante.id }}:</span> {{ estudiante.nombre }}
+                                    {{ estudiante.apellido }}
+                                </div>
+                                <!--Botones de Editar y Eliminar-->
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary me-2"
+                                        onclick="toggleEditFields('{{ estudiante.id }}')">Editar</button>
+
+                                    <form action="/eliminar/{{ estudiante.id }}" method="post" class="d-inline-block">
+                                        <input type="submit" value="Eliminar" class="btn btn-danger"
+                                            onclick="return confirmDelete(this.form);">
+                                    </form>
+                                </div>
+                            </li>
+                            <!--   Formulario de Editar OCULTO-->
+                            <li id="editFields_{{ estudiante.id }}" class="list-group-item mb-2" style="display: none;">
+                                <form action="/editar/{{ estudiante.id }}" method="post" class="row g-3">
+                                    <div class="col-md-4">
+                                        <input type="text" name="nombre" class="form-control"
+                                            placeholder="Nuevo Nombre">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" name="apellido" class="form-control"
+                                            placeholder="Nuevo Apellido">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-success">Guardar</button>
+                                    </div>
+                                </form>
+                            </li>
+                            {% endfor %}
+                            {% else %}
+                            <li class="list-group-item"> No hay datos </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
             </div>
-            
         </div>
     </div>
+
+    </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    // Función genérica para realizar solicitudes POST a las rutas definidas
-    function sendRequest(url, data) {
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: data,
-            success: function (response) {
-                alert(response.message);
-                // Refrescar la página después de realizar la acción (opcional)
-                location.reload();
-            },
-            error: function (error) {
-                alert('Error al procesar la solicitud');
-            }
+    <script>
+        // Realiza una solicitud POST a una URL con los datos proporcionados
+        function sendRequest(url, data) {
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: data,
+                success: function (response) { // exito
+                    alert(response.message);
+                    // Refrescar la página después de realizar la acción 
+                    location.reload();
+                },
+                error: function (error) { // error
+                    alert('Error al procesar la solicitud');
+                }
+            });
+        }
+
+        // Capturar el envío del formulario de creación
+        $('form[action="/"]').submit(function (e) {
+            e.preventDefault();
+            var data = $(this).serialize();
+            sendRequest('/', data);
         });
-    }
 
-    // Capturar el envío del formulario de creación y evitar que recargue la página
-    $('form[action="/"]').submit(function (e) {
-        e.preventDefault();
-        var data = $(this).serialize();
-        sendRequest('/', data);
-    });
+        // Capturar el envío del formulario de edición y eliminación 
+        $('form[action^="/editar/"], form[action^="/eliminar/"]').submit(function (e) {
+            e.preventDefault();
+            var data = $(this).serialize();
+            var url = $(this).attr('action');
+            sendRequest(url, data);
+        });
 
-    // Capturar el envío del formulario de edición y eliminación y evitar que recargue la página
-    $('form[action^="/editar/"], form[action^="/eliminar/"]').submit(function (e) {
-        e.preventDefault();
-        var data = $(this).serialize();
-        var url = $(this).attr('action');
-        sendRequest(url, data);
-    });
-</script>
+        function confirmDelete(form) {
+            var confirmResponse = confirm("¿Estás seguro de que deseas borrar el registro?");
+            if (confirmResponse) {
+                form.submit();
+            }
+            // Devuelve false para prevenir el envío del formulario si el usuario elige "Cancelar"
+            return confirmResponse;
+        }
+
+        // ocultar el formulario de editar, y mostrarlo al darle clic en el boton de EDITAR
+        function toggleEditFields(estudianteId) {
+            var fieldsContainer = document.getElementById(`editFields_${estudianteId}`);
+            if (fieldsContainer.style.display === "none") {
+                fieldsContainer.style.display = "block";
+            } else {
+                fieldsContainer.style.display = "none";
+            }
+        }
+    </script>
 
 </body>
+
 </html>
